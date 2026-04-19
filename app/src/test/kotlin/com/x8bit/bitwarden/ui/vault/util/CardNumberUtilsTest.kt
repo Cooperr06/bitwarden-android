@@ -104,4 +104,22 @@ class CardNumberUtilsTest {
         )
         assertEquals(VaultCardBrand.OTHER, "".detectCardBrand())
     }
+
+    @Test
+    fun `formatCardNumber should format Amex correctly`() {
+        assertEquals("3782 822463 10005", "378282246310005".formatCardNumber())
+        assertEquals("3411 111111 11111", "341111111111111".formatCardNumber())
+    }
+
+    @Test
+    fun `formatCardNumber should format Diners Club 14 digits correctly`() {
+        assertEquals("3056 930902 5904", "30569309025904".formatCardNumber())
+    }
+
+    @Test
+    fun `formatCardNumber should format standard cards in groups of 4`() {
+        assertEquals("4111 1111 1111 1111", "4111111111111111".formatCardNumber())
+        assertEquals("5500 0000 0000 0004", "5500000000000004".formatCardNumber())
+        assertEquals("6011 1111 1111 1117", "6011111111111117".formatCardNumber())
+    }
 }

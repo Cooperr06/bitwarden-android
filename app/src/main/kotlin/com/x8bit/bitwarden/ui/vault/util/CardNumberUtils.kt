@@ -1,7 +1,55 @@
+@file:Suppress("TooManyFunctions")
+
 package com.x8bit.bitwarden.ui.vault.util
 
 import com.bitwarden.ui.platform.feature.cardscanner.util.sanitizeCardNumber
 import com.x8bit.bitwarden.ui.vault.model.VaultCardBrand
+
+/**
+ * Formats a card number string with spaces based on its detected brand.
+ *
+ * @return The formatted card number string.
+ */
+@Suppress("MagicNumber")
+fun String.formatCardNumber(): String {
+    val digits = sanitizeCardNumber()
+    val brand = digits.detectCardBrand()
+
+    return when (brand) {
+        VaultCardBrand.AMEX -> digits.formatAmex()
+        VaultCardBrand.DINERS_CLUB -> if (digits.length == 14) {
+            digits.formatDinersClub()
+        } else {
+            digits.formatDefault()
+        }
+        else -> digits.formatDefault()
+    }
+}
+
+@Suppress("MagicNumber")
+private fun String.formatAmex(): String {
+    val result = StringBuilder()
+    for (i in indices) {
+        if (i == 4 || i == 10) result.append(" ")
+        result.append(this[i])
+    }
+    return result.toString()
+}
+
+@Suppress("MagicNumber")
+private fun String.formatDinersClub(): String {
+    val result = StringBuilder()
+    for (i in indices) {
+        if (i == 4 || i == 10) result.append(" ")
+        result.append(this[i])
+    }
+    return result.toString()
+}
+
+@Suppress("MagicNumber")
+private fun String.formatDefault(): String {
+    return chunked(4).joinToString(" ")
+}
 
 /**
  * Detects the card brand based on the card number prefix.
