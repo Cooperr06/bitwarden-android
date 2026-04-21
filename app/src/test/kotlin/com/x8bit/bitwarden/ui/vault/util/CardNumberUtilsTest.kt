@@ -127,4 +127,9 @@ class CardNumberUtilsTest {
         assertEquals("5500 0000 0000 0004", "5500000000000004".formatCardNumber())
         assertEquals("6011 1111 1111 1117", "6011111111111117".formatCardNumber())
     }
+
+    @Test
+    fun `formatCardNumber should keep short standard card numbers unchanged`() {
+        assertEquals("123", "123".formatCardNumber())
+    }
 }

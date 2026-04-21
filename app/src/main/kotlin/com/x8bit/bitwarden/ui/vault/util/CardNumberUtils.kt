@@ -6,49 +6,46 @@ import com.bitwarden.ui.platform.feature.cardscanner.util.sanitizeCardNumber
 import com.x8bit.bitwarden.ui.vault.model.VaultCardBrand
 
 /**
- * Formats a card number string with spaces based on its detected brand.
+ * Formats a card number using brand-specific spacing rules.
  *
- * @return The formatted card number string.
+ * AMEX numbers use `4-6-5` grouping and 14-digit Diners Club numbers use `4-6-4` grouping.
+ * All other brands are formatted in groups of 4 digits.
+ *
+ * @return The formatted card number.
  */
 @Suppress("MagicNumber")
 fun String.formatCardNumber(): String {
     val digits = sanitizeCardNumber()
     val brand = digits.detectCardBrand()
+    val defaultFormatted =
+        digits.formatWithSpacesAt(*(4 until digits.length step 4).toList().toIntArray())
 
     return when (brand) {
-        VaultCardBrand.AMEX -> digits.formatAmex()
+        VaultCardBrand.AMEX -> digits.formatWithSpacesAt(4, 10)
         VaultCardBrand.DINERS_CLUB -> if (digits.length == 14) {
-            digits.formatDinersClub()
+            digits.formatWithSpacesAt(4, 10)
         } else {
-            digits.formatDefault()
+            defaultFormatted
         }
-        else -> digits.formatDefault()
+        else -> defaultFormatted
     }
 }
 
-@Suppress("MagicNumber")
-private fun String.formatAmex(): String {
+/**
+ * Inserts spaces before the character indices in [positions].
+ *
+ * Indices outside the current string range are ignored.
+ *
+ * @return The formatted string.
+ */
+private fun String.formatWithSpacesAt(vararg positions: Int): String {
+    val spacingPositions = positions.toSet()
     val result = StringBuilder()
     for (i in indices) {
-        if (i == 4 || i == 10) result.append(" ")
+        if (i in spacingPositions) result.append(" ")
         result.append(this[i])
     }
     return result.toString()
-}
-
-@Suppress("MagicNumber")
-private fun String.formatDinersClub(): String {
-    val result = StringBuilder()
-    for (i in indices) {
-        if (i == 4 || i == 10) result.append(" ")
-        result.append(this[i])
-    }
-    return result.toString()
-}
-
-@Suppress("MagicNumber")
-private fun String.formatDefault(): String {
-    return chunked(4).joinToString(" ")
 }
 
 /**
