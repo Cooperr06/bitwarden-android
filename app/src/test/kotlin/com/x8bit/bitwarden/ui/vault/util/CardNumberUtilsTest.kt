@@ -117,6 +117,11 @@ class CardNumberUtilsTest {
     }
 
     @Test
+    fun `formatCardNumber should format Diners Club with non 14 digits as default`() {
+        assertEquals("3600 0000 0000 084", "360000000000084".formatCardNumber())
+    }
+
+    @Test
     fun `formatCardNumber should format standard cards in groups of 4`() {
         assertEquals("4111 1111 1111 1111", "4111111111111111".formatCardNumber())
         assertEquals("5500 0000 0000 0004", "5500000000000004".formatCardNumber())
