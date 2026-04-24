@@ -17,8 +17,11 @@ import com.x8bit.bitwarden.ui.vault.model.VaultCardBrand
 fun String.formatCardNumber(): String {
     val digits = sanitizeCardNumber()
     val brand = digits.detectCardBrand()
-    val defaultFormatted =
-        digits.formatWithSpacesAt(*(4 until digits.length step 4).toList().toIntArray())
+    val defaultFormatted = digits.formatWithSpacesAt(
+        *(4 until digits.length step 4)
+            .toList()
+            .toIntArray(),
+    )
 
     return when (brand) {
         VaultCardBrand.AMEX -> digits.formatWithSpacesAt(4, 10)
